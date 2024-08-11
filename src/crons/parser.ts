@@ -2,7 +2,7 @@ import * as cheerio from "cheerio";
 
 const ROOT_LINK = "https://dora-world.com/wallpaper";
 
-async function getDesktopLinks() {
+export async function getDesktopLinks() {
   try {
     const resp = await fetch(ROOT_LINK);
     const text = await resp.text();
@@ -26,7 +26,7 @@ async function getDesktopLinks() {
   }
 }
 
-async function getMobileLinks() {
+export async function getMobileLinks() {
   try {
     const resp = await fetch(ROOT_LINK);
     const text = await resp.text();

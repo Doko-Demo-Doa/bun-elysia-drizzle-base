@@ -44,3 +44,6 @@ package-lock.json
 
 # webstorm
 .idea
+
+# misc
+temp/

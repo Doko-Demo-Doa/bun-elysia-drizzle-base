@@ -1,21 +1,22 @@
 import { Elysia } from "elysia";
 import { swagger } from "@elysiajs/swagger";
-import { cron } from "@elysiajs/cron";
+import { cron, Patterns } from "@elysiajs/cron";
+import { startParsingAndDownload } from "./crons/downloader";
 
 const app = new Elysia()
   .use(swagger())
-  .group("/api", (app) =>
-    app.get("/", () => {
-      return "Hello World!";
-    })
-  )
   .use(
     cron({
       name: "heartbeat",
-      pattern: "0 * * * *",
+      pattern: Patterns.everyHours(),
       run() {
         console.log("Heartbeat");
       },
+    })
+  )
+  .group("/api", (app) =>
+    app.get("/", () => {
+      return "Hello World!";
     })
   )
   .listen(process.env.PORT ?? 3000);
@@ -23,3 +24,5 @@ const app = new Elysia()
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
 );
+
+// startParsingAndDownload();
