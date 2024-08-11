@@ -10,11 +10,14 @@
     "studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@elysiajs/cron": "^1.1.0",
     "@elysiajs/swagger": "^0.8.5",
+    "cheerio": "^1.0.0",
     "drizzle-orm": "^0.29.3",
     "drizzle-zod": "^0.5.1",
     "elysia": "latest",
-    "pg": "^8.11.3"
+    "pg": "^8.11.3",
+    "uploadthing": "^6.13.2"
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
