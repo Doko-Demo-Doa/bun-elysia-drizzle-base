@@ -1,0 +1,1 @@
+ALTER TABLE "wallpapers" ADD COLUMN "original_url" varchar(2048) NOT NULL;
