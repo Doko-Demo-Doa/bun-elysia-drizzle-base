@@ -1,7 +1,11 @@
 import { Elysia } from "elysia";
 import { swagger } from "@elysiajs/swagger";
 import { cron, Patterns } from "@elysiajs/cron";
+import { inArray, notInArray } from "drizzle-orm";
 import { startParsingAndDownload } from "./crons/downloader";
+import { db } from "./db";
+import { wallpapers } from "./db/schema";
+import { getDesktopLinks } from "./crons/parser";
 
 const app = new Elysia()
   .use(swagger())
@@ -15,8 +19,14 @@ const app = new Elysia()
     })
   )
   .group("/api", (app) =>
-    app.get("/", () => {
-      return "Hello World!";
+    app.get("/", async () => {
+      const desktopLinks = await getDesktopLinks();
+      const query = await db
+        .select()
+        .from(wallpapers)
+        .where(notInArray(wallpapers.originalUrl, desktopLinks));
+
+      return query;
     })
   )
   .listen(process.env.PORT ?? 3000);
