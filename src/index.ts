@@ -1,7 +1,8 @@
 import { Elysia } from "elysia";
 import { swagger } from "@elysiajs/swagger";
 import { cron, Patterns } from "@elysiajs/cron";
-import { inArray, notInArray } from "drizzle-orm";
+import { inArray } from "drizzle-orm";
+import * as R from "remeda";
 import { startParsingAndDownload } from "./crons/downloader";
 import { db } from "./db";
 import { wallpapers } from "./db/schema";
@@ -14,19 +15,26 @@ const app = new Elysia()
       name: "heartbeat",
       pattern: Patterns.everyHours(),
       run() {
-        console.log("Heartbeat");
+        console.log("Starting crawling...");
+        startParsingAndDownload();
       },
     })
   )
   .group("/api", (app) =>
     app.get("/", async () => {
       const desktopLinks = await getDesktopLinks();
+
+      // Check for existing links
       const query = await db
         .select()
         .from(wallpapers)
-        .where(notInArray(wallpapers.originalUrl, desktopLinks));
+        .where(inArray(wallpapers.originalUrl, desktopLinks));
 
-      return query;
+      const diff = R.difference(
+        desktopLinks,
+        query.map((q) => q.originalUrl)
+      );
+      return diff;
     })
   )
   .listen(process.env.PORT ?? 3000);
@@ -34,5 +42,3 @@ const app = new Elysia()
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
 );
-
-// startParsingAndDownload();

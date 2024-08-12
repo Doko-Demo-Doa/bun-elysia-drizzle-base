@@ -1,14 +1,33 @@
 import { UTApi } from "uploadthing/server";
 import { unlinkSync } from "node:fs";
+import { difference } from "remeda";
+
 import { getDesktopLinks } from "./parser";
 import { db } from "../db";
 import { wallpapers, type NewWallpaper } from "../db/schema";
+import { inArray } from "drizzle-orm";
 
 export const utapi = new UTApi();
 
 export async function startParsingAndDownload() {
   const desktopLinks = await getDesktopLinks();
-  for (const link of desktopLinks) {
+
+  const query = await db
+    .select()
+    .from(wallpapers)
+    .where(inArray(wallpapers.originalUrl, desktopLinks));
+
+  // Only get links in desktopLinks that are not in the database
+  const diff = difference(
+    desktopLinks,
+    query.map((q) => q.originalUrl)
+  );
+
+  if (diff.length) {
+    console.info("New links found: ", diff);
+  }
+
+  for (const link of diff) {
     // Download file
     const result = await fetch(link);
     const path = `./temp/${extractFileNameFromUrl(link)}`;
