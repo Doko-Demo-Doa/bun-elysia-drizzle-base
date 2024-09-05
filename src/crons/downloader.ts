@@ -34,9 +34,12 @@ export async function startParsingAndDownload() {
     await Bun.write(path, result);
     const fileM = Bun.file(path);
 
+    console.log("Downloaded: ", extractFileNameFromUrl(link));
+
     // Upload
     const uploadedFile = await utapi.uploadFiles(
-      new File([fileM], extractFileNameFromUrl(link) || "")
+      new File([fileM], extractFileNameFromUrl(link) || ""),
+      { acl: "public-read" }
     );
 
     const newWallpaper: NewWallpaper = {

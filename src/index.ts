@@ -15,7 +15,6 @@ const app = new Elysia()
       name: "heartbeat",
       pattern: Patterns.everyHours(),
       run() {
-        console.log("Starting crawling...");
         startParsingAndDownload();
       },
     })
